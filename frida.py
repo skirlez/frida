@@ -85,16 +85,18 @@ def cleanup():
 		os.remove("./igor/artifact.zip")
 	except:
 		pass
-def build_gamemaker_project():
-	SHOULD_BUILD_PROJECT = demand("SHOULD_BUILD_PROJECT", "build")
-	if (SHOULD_BUILD_PROJECT == "0"):
-		print("SHOULD_BUILD_PROJECT is set to 0, skipping build...")
-		return
+def build_gamemaker_project(force = False):
+	if not force:
+		SHOULD_BUILD_PROJECT = demand("SHOULD_BUILD_PROJECT", "build")
+		if (SHOULD_BUILD_PROJECT == "0"):
+			print("SHOULD_BUILD_PROJECT is set to 0, skipping build...")
+			return
 
 	SHOULD_HASH = demand("SHOULD_HASH")
-	if (SHOULD_HASH != "0"):
-		previous_hash = ""
+	
+	if (SHOULD_HASH != "0" and not force):
 		project_hash = ""
+		previous_hash = ""
 		if (os.path.isfile("./igor/hash.txt")):
 			with open("./igor/hash.txt", 'r') as f:
 				previous_hash = f.read()
@@ -166,16 +168,34 @@ def build_gamemaker_project():
 	cleanup()
 
 	if (SHOULD_HASH != "0"):
-		if project_hash == "":
-			project_hash = hash_project()
+		new_hash = hash_project()
 		with open("./igor/hash.txt", 'w') as f:
-			f.write(project_hash)
+			f.write(new_hash)
 
 
 ### packaging mod
-
+MOD_NAME = ""
 def package_mod():
+	global MOD_NAME
+
 	print("---Packaging the mod---")
+	if not os.path.isdir("./base/mod"):
+		print("base/mod wasn't found. Please create the base/mod folders, and place your mod there.")
+		exit()
+	if not os.path.isfile("./base/mod/mod.json"):
+		print("No mod.json found in base/mod. Please put it there.")
+		exit()
+	try:
+		with open('./base/mod/mod.json') as f:
+			mod = json.loads(f.read())
+			MOD_NAME = mod["mod_id"]
+	except:
+		print("Failed to load mod.json, or it was missing the \"mod_id\" field, which is required.")
+
+	if os.path.isdir(f"./base/{MOD_NAME}"):
+		print(f"You can't have a folder named \"{MOD_NAME}\" in base, as it would conflict with your mod's own folder!")
+		print("(your mod needs to be in base/mod. When packaging, base/mod is copied to out/(mod id))")
+		exit()
 
 	if os.path.isdir("./out"):
 		print("Deleting previous out folder...")
@@ -184,9 +204,11 @@ def package_mod():
 	print("Creating out folder...")
 	shutil.copytree("./base", "./out")
 	if os.path.isfile("./igor/mod_data.win"):
-		shutil.copy("./igor/mod_data.win", "./out/mod/mod_data.win")
+		shutil.copy("./igor/mod_data.win", f"./out/mod/mod_data.win")
 	else:
 		print("No datafile found in ./igor, so nothing was copied...")
+
+	os.rename("./out/mod", f"./out/{MOD_NAME}")
 
 ### applying mod ###
 
@@ -249,8 +271,7 @@ def check_update():
 	
 	if tag_name > frida_version:
 		print(f"Update found! You are on version {frida_version}, and the latest version is {tag_name}.")
-		print("You can update by going to https://github.com/skirlez/frida/releases/latest,")
-		print("Downloading the script, and replacing this script with the downloaded one.")
+		print("You can update by going to https://github.com/skirlez/frida/releases/latest, downloading the script, and replacing this script with the downloaded one.")
 	else:
 		print("You are on the latest version.")
 	
@@ -285,7 +306,7 @@ if __name__ == "__main__":
 	
 	opname = argument
 	if argument == "build":
-		build_gamemaker_project()
+		build_gamemaker_project(force=True)
 		print("Done!")
 		if (should_check_for_update()):
 			check_update()
@@ -293,7 +314,7 @@ if __name__ == "__main__":
 	if argument == "package":
 		build_gamemaker_project()
 		package_mod()
-		print("Done! Your mod is in out/mod.")
+		print(f"Done! Your mod is in out/{MOD_NAME}.")
 		if (should_check_for_update()):
 			check_update()
 		exit()
