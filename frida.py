@@ -229,7 +229,7 @@ def package_mod(linkbase=False):
 	print("Creating out folder...")
 	if not linkbase:
 		shutil.copytree("./base", "./out")
-		shutil.copytree("./igor/included_files", "./out/mod")
+		shutil.copytree("./igor/included_files", "./out/mod", dirs_exist_ok=True)
 	else:
 		for target in ("./base", "./igor/included_files"):
 			for root, directories, files in os.walk(os.path.abspath(target)):
