@@ -69,7 +69,7 @@ def hash_project():
 		if (os.path.isfile(full_item_path)):
 			hash_file(full_item_path, item, hash_func)
 			continue
-		for root, _, files in os.walk(full_item_path):
+		for root, _, files in os.walk(full_item_path, followlinks=True):
 			for file_path in sorted(files):
 				full_path = os.path.join(root, file_path)
 				relative_path = os.path.relpath(full_path, project_folder)
@@ -229,10 +229,11 @@ def package_mod(linkbase=False):
 	print("Creating out folder...")
 	if not linkbase:
 		shutil.copytree("./base", "./out")
-		shutil.copytree("./igor/included_files", "./out/mod", dirs_exist_ok=True)
+		if os.path.isdir("./igor/included_files"):
+			shutil.copytree("./igor/included_files", "./out/mod", dirs_exist_ok=True)
 	else:
 		for target in ("./base", "./igor/included_files"):
-			for root, directories, files in os.walk(os.path.abspath(target)):
+			for root, directories, files in os.walk(os.path.abspath(target), followlinks=True):
 				relative_root = os.path.relpath(root, target)
 				for directory in directories:
 					os.makedirs(f"./out/{relative_root}/{directory}", exist_ok=True)
