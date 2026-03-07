@@ -1,6 +1,11 @@
 # frida
 
-Frida is a script for g3man mods that can build, package, and apply them.
+Frida is a self-contained Python script for g3man mods that can build, package, and apply them. 
 
-It reads from `frida-config.ini` in the same directory (see `.frida-config-template.ini`) to get the paths to the GameMaker compiler,
-g3man executable, and other user-specific variables.
+It relies only on the standard library and should work with basically any recent version of Python. 
+(If not, report it it as a bug!)
+
+## TODO
+- GitLab Dependency Support
+- Arbitrary Git Repository Depdency support (probably through calling the git executable)
+- Use one of the standard library provided modules for the CLI instead of basically "winging it"
