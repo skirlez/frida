@@ -1,0 +1,5 @@
+.frida
+out
+out.zip
+frida-user-config.jsonc
+__pycache__
