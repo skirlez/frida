@@ -695,7 +695,7 @@ def compare_dict_to_contract(dict, contract, issues):
 frida_template_project_config = """
 // This file is the project config. This file isn't personal to any user and should be shared by everyone working on this mod.
 // 
-// You *can* use backslashes when filling out paths, but they must be escaped, i.e. you have to write "\\" instead of "\" every time.
+// You *can* use backslashes when filling out paths, but they must be escaped, i.e. you have to write "\\\\" instead of "\" every time.
 // Save yourself the hassle and use forward slashes.
 //
 // Frida wiki entry: https://github.com/skirlez/frida/wiki/Project-Config
@@ -735,7 +735,7 @@ frida_template_project_config = """
 	// You should put the ID of your mod and its dependencies here.
 	// Earlier in the list means higher priority.
 	// 
-	// If you have a "profile.json" file in the "base" folder,
+	// If you have a profile.json file in the "base" folder,
 	// this setting will not override it.
 	"mod_order" : [],
 	
@@ -743,7 +743,7 @@ frida_template_project_config = """
 	// Leaving this as blank will use the same save folder as the vanilla game,
 	// Changing this will change the save folder. (Meaning you will have completely isolated save files).
 	//
-	// If you have a "profile.json" file in the "base" folder,
+	// If you have a profile.json file in the "base" folder,
 	// this setting will not override it.
 	"modded_save_name" : "",
 	
@@ -854,7 +854,8 @@ frida_template_user_config = """
 // 
 // You *can* use backslashes when filling out paths, but they must be escaped, i.e. you have to write "\\\\" instead of "\\" every time.
 // Save yourself the hassle and use forward slashes.
-
+//
+// Frida wiki entry: https://github.com/skirlez/frida/wiki/User-Config
 {
 	// The path to g3man's executable file.
 	// https://github.com/skirlez/g3man/releases

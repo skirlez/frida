@@ -7,10 +7,9 @@ It relies only on the standard library and should work with basically any recent
 
 ## Useful Resources:
 
-[Project Config](https://github.com/skirlez/frida/wiki/Project-Config) page on the wiki
-[User Config](https://github.com/skirlez/frida/wiki/User-Config) page on the wiki
-[Dependency Management](https://github.com/skirlez/frida/wiki/Dependency-Management) page on the wiki
-
+- [Project Config](https://github.com/skirlez/frida/wiki/Project-Config) page on the wiki
+- [User Config](https://github.com/skirlez/frida/wiki/User-Config) page on the wiki
+- [Dependency Management](https://github.com/skirlez/frida/wiki/Dependency-Management) page on the wiki
 
 ## TODO
 - GitLab Dependency Support
