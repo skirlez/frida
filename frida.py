@@ -359,7 +359,7 @@ user_config_template = """// This file is the user config. This file is personal
 {
 	// Fill this part out if you want to build GameMaker (gms2 and above) projects.
 	"gms2": {
-		// Linux: Likely is /home/USER/.local/share/GameMakerStudio-Beta/Cache
+		// Linux: Likely is /home/USER/.local/share/GameMakerStudio2-Beta/Cache
 		// Windows: Likely is C:/ProgramData/GameMakerStudio2/Cache
 		"cache_path": "",
 	},
@@ -370,6 +370,7 @@ user_config_template = """// This file is the user config. This file is personal
 		// https://github.com/skirlez/g3man/releases		
 		"g3man_path": "",
 		
+		// The path to the folder of the game you're modding.
 		"game_path": "",
 
 		// The name of the new datafile g3man will put in the game folder, with mods applied to it.
@@ -729,11 +730,6 @@ def build_gamemaker_project(
 			for entry in outputs:
 				if entry != f"{project_name}.{GMAC_DATAFILE_EXT}":
 					shutil.move(f"{outputs_folder}/{entry}", f"{outputs_folder}/included_files")
-		else:
-			if (build_options.included_files_export_path is not None):
-				raise FridaException(
-									"Build error: Project config has \"build.options.included_files_export_path\" set"
-									f" to {build_options.included_files_export_path}, but the build produced no included files.")
 			
 		shutil.move(f"{outputs_folder}/{project_name}.{GMAC_DATAFILE_EXT}", f"{outputs_folder}/datafile")
 			
@@ -797,10 +793,23 @@ def pack_project(cli_frida_root: str, out_mods_folder: str, frida_root: str, pro
 			if os.path.isdir(export_path):
 				export_path += "/mod_data.win"
 			shutil.copy(f"{gmac_results}/datafile", export_path)
-			if options.included_files_export_path is not None:
-				if not os.path.exists(f"{gmac_results}/included_files"):
-					raise FridaException(f"Cannot package this project: Included files folder is missing")
-				shutil.copytree(f"{gmac_results}/included_files", f"{out_mods_folder}/{options.included_files_export_path}", dirs_exist_ok=True, copy_function=required_symlink_copy_func)
+
+			path_set = options.included_files_export_path is not None
+			included_files_exist = os.path.exists(f"{gmac_results}/included_files")
+
+			if not included_files_exist:
+				if not path_set:
+					return
+				else:
+					print(f"Warning: Project config has \"build.options.included_files_export_path\" set to {options.included_files_export_path}, but the build produced no included files.")
+			else:
+				if not path_set:
+					print(f"Warning: Project config has \"build.options.included_files_export_path\" unset, but the build produced some included files.")
+					print(f"The included files produced are: {os.listdir(f"{gmac_results}/included_files")}")
+					print("Please set the option if you'd like to package these files.")
+				else:
+					shutil.copytree(f"{gmac_results}/included_files", f"{out_mods_folder}/{options.included_files_export_path}", dirs_exist_ok=True, copy_function=required_symlink_copy_func)
+			
 
 
 def pack_subroutine(cli_frida_root: str, out_profile_folder : str, frida_root: str, project_config: ProjectConfig, 
